@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}CampusQuest{% endblock %}</title>
+</head>
+<body>
+
+    <header>
+        <h1>CampusQuest</h1>
+        <nav>
+            <a href="/">Home</a> |
+            <a href="/missoes">Missões</a> |
+            <a href="/avisos">Avisos</a> |
+            <a href="/sobre">Sobre</a>
+        </nav>
+        <hr>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <hr>
+        <small>Desenvolvimento de Aplicações</small>
+    </footer>
+
+</body>
+</html>

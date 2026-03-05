@@ -1,0 +1,16 @@
+# venv
+venv_desenvolvimento/
+.venv/
+
+# python
+__pycache__/
+*.pyc
+
+# env
+.env
+
+# ide
+.vscode/
+
+# logs
+*.log*
