@@ -1,69 +1,30 @@
-from sqlalchemy import text
-from .extensions import engine
+from datetime import datetime
+from .extensions import db
 
-# -----------------------------
-# USERS
-# -----------------------------
-def list_users(limit=50):
-    sql = text("""
-        SELECT id, name, email, role, created_at
-        FROM users
-        ORDER BY created_at DESC
-        LIMIT :limit
-    """)
-    with engine.connect() as conn:
-        return conn.execute(sql, {"limit": limit}).mappings().all()
+class User(db.Model):
+    __tablename__ = "users"
 
-# -----------------------------
-# TICKETS
-# -----------------------------
-def list_tickets(limit=50):
-    sql = text("""
-        SELECT
-          t.id,
-          t.title,
-          t.status,
-          t.priority,
-          t.created_at,
-          u.name AS customer_name,
-          a.name AS agent_name
-        FROM tickets t
-        JOIN users u ON u.id = t.customer_id
-        LEFT JOIN users a ON a.id = t.agent_id
-        ORDER BY t.created_at DESC
-        LIMIT :limit
-    """)
-    with engine.connect() as conn:
-        return conn.execute(sql, {"limit": limit}).mappings().all()
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
 
-def get_ticket(ticket_id: int):
-    sql_ticket = text("""
-        SELECT
-          t.*,
-          u.name  AS customer_name,
-          u.email AS customer_email,
-          a.name  AS agent_name
-        FROM tickets t
-        JOIN users u ON u.id = t.customer_id
-        LEFT JOIN users a ON a.id = t.agent_id
-        WHERE t.id = :id
-    """)
+    tasks = db.relationship("Task", back_populates="user", cascade="all, delete-orphan")
 
-    sql_updates = text("""
-        SELECT
-          tu.id,
-          tu.message,
-          tu.created_at,
-          au.name AS author_name
-        FROM ticket_updates tu
-        JOIN users au ON au.id = tu.author_id
-        WHERE tu.ticket_id = :id
-        ORDER BY tu.created_at ASC
-    """)
+    def __repr__(self):
+        return f"<User {self.name}>"
 
-    with engine.connect() as conn:
-        ticket = conn.execute(sql_ticket, {"id": ticket_id}).mappings().first()
-        if not ticket:
-            return None
-        updates = conn.execute(sql_updates, {"id": ticket_id}).mappings().all()
-        return {"ticket": ticket, "updates": updates}
+class Task(db.Model):
+    __tablename__ = "tasks"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    user = db.relationship("User", back_populates="tasks")
+
+    def __repr__(self):
+        return f"<Task {self.title}>"

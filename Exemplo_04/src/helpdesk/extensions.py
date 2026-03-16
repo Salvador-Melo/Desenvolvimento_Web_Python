@@ -1,12 +1,7 @@
-from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-engine = None
+db = SQLAlchemy()
+migrate = Migrate()
 
-def init_db(app):
-    global engine
-    db_url = app.config["DATABASE_URL"]
-    engine = create_engine(
-        db_url,
-        pool_pre_ping=True,
-        future=True
-    )
+
