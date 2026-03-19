@@ -38,27 +38,37 @@ def detalhe(ticket_id):
 # URL: /tickets/criar-ticket
 # Usa: add() + commit()
 # =========================================================
-@bp.get("/criar-ticket")
+@bp.route("/criar-ticket", methods=["GET", "POST"])
 def criar_ticket():
-    # Busca um usuário existente
-    usuario = User.query.get(1)
 
-    if not usuario:
-        abort(404)
+    if request.method == "POST":
+        # Pegando dados do formulário
+        customer_id = request.form.get("customer_id")
+        title = request.form.get("title")
+        description = request.form.get("description")
+        priority = request.form.get("priority")
 
-    novo_ticket = Ticket(
-        customer_id=usuario.id,
-        title="Problema no computador",
-        description="A máquina não liga.",
-        status="open",
-        priority="medium"
-    )
+        # Validação básica
+        usuario = User.query.get(customer_id)
+        if not usuario:
+            abort(404)
 
-    db.session.add(novo_ticket)
-    db.session.commit()
+        novo_ticket = Ticket(
+            customer_id=usuario.id,
+            title=title,
+            description=description,
+            status="open",
+            priority=priority
+        )
 
-    return render_template("tickets/criar_ticket.html", ticket=novo_ticket)
+        db.session.add(novo_ticket)
+        db.session.commit()
 
+        return redirect(url_for("tickets.lista"))
+
+    # GET → exibe formulário
+    usuarios = User.query.all()
+    return render_template("tickets/criar_ticket.html", usuarios=usuarios)
 
 # =========================================================
 # ADICIONAR ATUALIZAÇÃO (extra simples)
