@@ -9,7 +9,7 @@ def lista():
     return render_template("users/lista.html", users=users)
 
 # =========================================================
-# CRIAR USUÁRIO (exemplo didático)
+# CRIAR USUÁRIO
 # URL: /tickets/criar-usuario
 # Usa: add() + commit()
 # =========================================================

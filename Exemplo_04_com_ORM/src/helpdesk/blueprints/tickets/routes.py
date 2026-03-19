@@ -33,10 +33,6 @@ def detalhe(ticket_id):
 
     return render_template("tickets/detalhe.html", ticket=ticket)
 
-
-
-
-
 # =========================================================
 # CRIAR TICKET
 # URL: /tickets/criar-ticket
