@@ -6,8 +6,7 @@ venv_desenvolvimento/
 __pycache__/
 *.pyc
 
-# env
-.env
+
 
 # ide
 .vscode/
